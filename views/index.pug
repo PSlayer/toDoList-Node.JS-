@@ -1,0 +1,72 @@
+extends layout.pug
+
+block title
+    title TODO LIST | Main page
+
+block titleHeader
+    h1 TODO LIST
+
+block content
+    .container.overflow-hidden
+        div.row.align-items-center
+        
+            div.col
+                if editItem
+                    form(method="POST", action="/update")
+                        input(name="id", hidden, value=editItem.id)
+                        .form-row.justify-content-center
+                            .form-group.col-sm-6
+                                label Название
+                                input.form-control(name="title", value=editItem.title, required)
+                        .form-row.justify-content-center
+                                label.col-sm-3 Статус
+                                select.col-sm-3.form-control(name="status")
+                                    each item in statuses
+                                        if item.id==editItem.status.id
+                                            option(value=item.id, selected) #{item.name}
+                                        else
+                                            option(value=item.id) #{item.name}
+                        .form-row.justify-content-center.mt-5
+                            input.btn.btn-secondary.form-control.col-sm-6(type="submit",value="Сохранить")
+                else
+                    - var dateToday=new Date().toISOString().split('T')[0]
+                    form(method="POST", action="/add")
+                        .form-row.justify-content-center
+                            .form-group.col-sm-6
+                                label Название
+                                input.form-control(name="title", required)
+                        .form-row.justify-content-center
+                                label.col-sm-3 Статус
+                                select.col-sm-3.form-control(name="status")
+                                    each item in statuses
+                                        option(value=item.id) #{item.name}
+                        .form-row.justify-content-center.mt-5
+                            input.btn.btn-secondary.form-control.col-sm-6(type="submit",value="Добавить")
+                
+            div.col
+                table.table.table-hover.table-theme-dark.mt-5
+                    thead
+                        tr
+                            th #
+                            th Название
+                            th Статус
+                            th Действия
+                    tbody
+                        - var className=''
+                        each item in tasks
+                            if item.status.id==2
+                                - className='task-no-success'
+                            else if item.status.id==3
+                                - className='task-success'
+                            else
+                                -className=''
+
+                            tr(class=className)
+                                td #{item.id}
+                                td.name.box
+                                    span #{item.title}
+                                td #{item.status.name}
+                                td
+                                    div 
+                                        a.btn.btn-secondary.btn-lg(href="/get/"+ item.id) &#9998;
+                                        a.btn.btn-secondary.btn-lg(href="/delete/"+ item.id) &#128465;
